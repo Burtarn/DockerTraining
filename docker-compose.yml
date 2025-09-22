@@ -8,7 +8,7 @@ services:
       - backend
 
   backend:
-    build: ./backend
+    build: ./server   
     ports:
       - "5000:5000"
     environment:

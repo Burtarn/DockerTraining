@@ -4,4 +4,4 @@ COPY package*.json ./
 RUN npm install --production
 COPY . .
 EXPOSE 5000
-CMD ["node", "index.js"]  # eller din startfil
+CMD ["node", "index.js"] # eller app.js om din startfil heter så
