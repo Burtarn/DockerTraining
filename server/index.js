@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Exempelroute
 app.get("/api/hello", (req, res) => {
-  res.json({ message: "Hej från servern!" });
+  res.json({ message: "Hej från express-servern!" });
 });
 
 const PORT = process.env.PORT || 5000;
