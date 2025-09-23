@@ -1,70 +1,35 @@
-name: CI Pipeline
+name: Deploy
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch: {} 
 
 jobs:
-  backend:
-    name: Build Backend
+  deploy:
+    name: Deploy Application
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+
+      - name: Download backend build artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: '20'
+          name: backend-build
+          path: server/dist/
 
-      - name: Cache Node modules (Backend)
-        uses: actions/cache@v3
+      - name: Download frontend build artifact
+        uses: actions/download-artifact@v4
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          name: frontend-build
+          path: frontend/dist/
 
-      - name: Install dependencies
-        run: npm install
 
-      - name: Run tests
-        run: npm test || echo "No tests found, skipping."
-
-      - name: Build backend
-        run: npm run build || echo "No build script, skipping."
-
-  frontend:
-    name: Build Frontend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Cache Node modules (Frontend)
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test || echo "No tests found, skipping."
-
-      - name: Build frontend
-        run: npm run build || echo "No build script, skipping."
+      - name: Deploy to server
+        run: |
+          echo "Deploying backend and frontend..."
+          # scp/rsync till server eller docker push osv.
