@@ -35,13 +35,9 @@ jobs:
 
       - name: Test PostgreSQL connection
         run: |
-          psql -h test-db.postgres.database.azure.com \
-               -p 5432 \
-               -U chas_pg_admin@test-db \
-               -d postgres \
-               -c "SELECT version();"
+          psql "host=test-db.postgres.database.azure.com port=5432 user=chas_pg_admin@test-db dbname=postgres sslmode=require" -c "SELECT version();"
         env:
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}          
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
 
       - name: Install dependencies
         run: npm install
