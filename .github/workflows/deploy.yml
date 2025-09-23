@@ -30,6 +30,19 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Test PostgreSQL connection
+        run: |
+          psql -h test-db.postgres.database.azure.com \
+               -p 5432 \
+               -U chas_pg_admin@test-db \
+               -d postgres \
+               -c "SELECT version();"
+        env:
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}          
+
       - name: Install dependencies
         run: npm install
 
