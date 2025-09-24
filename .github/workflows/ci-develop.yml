@@ -1,16 +1,16 @@
-name: CI Pipeline
+name: CI Pipeline - Develop
 
 on:
   push:
     branches:
-      - main
+      - develop
   pull_request:
     branches:
-      - main
+      - develop
 
 jobs:
   backend:
-    name: Build Backend
+    name: Build Backend (Develop)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -30,7 +30,6 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-          
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
@@ -43,21 +42,22 @@ jobs:
           PGPORT: ${{ secrets.PGPORT }}
           PGDATABASE: ${{ secrets.PGDATABASE }}
           PGPASSWORD: ${{ secrets.PGPASSWORD }}
+
       - name: Install dependencies
         run: npm install
 
-      - name: Lint backend
+      - name: Lint backend (develop)
         run: npm run lint || echo "No lint script, skipping."
-        
 
-      - name: Run tests
-        run: npm test || echo "No tests found, skipping."
+
+      - name: Run backend develop tests
+        run: npm run test:develop || echo "No develop tests"
 
       - name: Build backend
         run: npm run build || echo "No build script, skipping."
 
   frontend:
-    name: Build Frontend
+    name: Build Frontend (Develop)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -80,11 +80,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Lint frontend
+      - name: Lint frontend (develop)
         run: npm run lint || echo "No lint script, skipping."
 
-      - name: Run tests
-        run: npm test || echo "No tests found, skipping."
+
+      - name: Run frontend develop tests
+        run: npm run test || echo "No tests found, skipping."
 
       - name: Build frontend
         run: npm run build || echo "No build script, skipping."
