@@ -42,4 +42,4 @@ jobs:
 
       # 6️⃣ Starta containers med docker-compose
       - name: Run docker-compose
-        run: docker-compose -f docker-compose.yml up --build -d
+        run: docker compose -f docker-compose.yml up --build -d
