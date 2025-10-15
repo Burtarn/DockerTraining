@@ -1,9 +1,18 @@
-# Docker
+### Frontend
+- React (Vite)
+- ESLint
+- Jest för enhetstester
 
+### Backend
+- Node.js & Express
+- dotenv, cors, swagger-jsdoc, swagger-ui-express
+- PostgreSQL (Azure)
+- Jest & Supertest för tester
 
-- Node.js / Express.js (backend)  
-- React (frontend)  
-- Docker & Docker Compose  
-- GitHub Actions (CI/CD)  
-- Azure Database (PostgreSQL)  
-- Jest (enhetstester)
+### DevOps / Infrastruktur
+- Docker & Docker Compose
+- Azure Database for PostgreSQL
+- GitHub Actions (CI/CD)
+- Snyk (dependency scanning)
+- CodeQL (security analysis)
+- Swagger (auto-genererad dokumentation)
