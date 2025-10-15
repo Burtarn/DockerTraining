@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: [frontend, backend]
+        project: [frontend, server]
 
     steps:
       - name: Checkout repository
