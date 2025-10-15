@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: [frontend, server]
+        project: [frontend, backend]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -21,12 +22,17 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: ${{ matrix.project }}
 
-      - name: Run Snyk scan
-        uses: snyk/actions/node@master
-        with:
-          working-directory: ${{ matrix.project }}
+      - name: Run Snyk test
+        run: snyk test
+        working-directory: ${{ matrix.project }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk monitor
+        run: snyk monitor
+        working-directory: ${{ matrix.project }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
