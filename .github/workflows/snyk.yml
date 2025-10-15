@@ -8,6 +8,10 @@ on:
 jobs:
   snyk:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [frontend, backend]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -17,9 +21,12 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+        working-directory: ${{ matrix.project }}
 
-      - name: Run Snyk to check for vulnerabilities
+      - name: Run Snyk scan
         uses: snyk/actions/node@master
+        with:
+          working-directory: ${{ matrix.project }}
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
