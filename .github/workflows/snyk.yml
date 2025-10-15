@@ -19,12 +19,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Snyk - setup
-        uses: snyk/actions/setup@v2
-
-      - name: Snyk test
-        uses: snyk/actions/test@v2
-        with:
-          args: test
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
