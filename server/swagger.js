@@ -6,9 +6,9 @@
     definition: {
         openapi: "3.0.0",
         info: {
-        title: "Basic Express API",
+        title: "Mitt super API",
         version: "1.0.0",
-        description: "En enkel API för test och dokumentation",
+        description: "Test och dokumentation",
         },
         servers: [
         {
