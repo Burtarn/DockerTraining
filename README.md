@@ -16,3 +16,11 @@
 - Snyk (dependency scanning)
 - CodeQL (security analysis)
 - Swagger (auto-genererad dokumentation)
+
+
+### Multistage dockerfile <-
+
+Mindre image-storlek.
+Snabbare byggtid pga cahching.
+Renare och mer säker runtime
+
