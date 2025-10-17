@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "test": "echo \"No tests yet\" && exit 0",
+    "dev": "nodemon server.js",
     "docs": "swagger-jsdoc -d swaggerDef.js -o docs/swagger.json"
   },
   "dependencies": {
