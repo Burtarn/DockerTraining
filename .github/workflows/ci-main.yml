@@ -104,11 +104,11 @@ jobs:
 
       # OM JAG VILL KÖRA MOCKDEPLOY.!!!!!!
       
-      # - name: Mock Deploy Frontend
-      #   if: success()
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: ./frontend/dist
-      #     publish_branch: gh-pages
-      #     destination_dir: frontend-preview
+      - name: Mock Deploy Frontend
+        if: success()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/dist
+          publish_branch: gh-pages
+          destination_dir: frontend-preview
