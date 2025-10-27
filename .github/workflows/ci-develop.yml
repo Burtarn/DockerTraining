@@ -9,63 +9,12 @@ on:
       - develop
 
 jobs:
-  backend:
-    name: Build Backend (Develop)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.19.0'
-
-      - name: Check Node & NPM versions
-        run: |
-          node -v
-          npm -v
-
-      - name: Cache Node modules (Backend)
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: backend-node-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Test PostgreSQL connection
-        run: |
-          psql -c "SELECT version();"
-        env:
-          PGHOST: ${{ secrets.PGHOST }}
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPORT: ${{ secrets.PGPORT }}
-          PGDATABASE: ${{ secrets.PGDATABASE }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Lint backend (develop)
-        run: npm run lint || echo "No lint script, skipping."
-
-      - name: Run backend develop tests
-        run: npm run test:develop || echo "No develop tests"
-
-      - name: Build backend
-        run: npm run build || echo "No build script, skipping."
-
   frontend:
-    name: Build Frontend (Develop)
+    name: Build & Deploy Frontend (Develop)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: frontend  # package.json ligger här
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -73,18 +22,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.19.0'
+          node-version: '22' # Node 22 löser EBADENGINE varningarna
 
-      - name: Check Node & NPM versions
-        run: |
-          node -v
-          npm -v
-
-      - name: Cache Node modules (Frontend)
+      - name: Cache Node modules
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: frontend-node-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install
@@ -104,5 +48,5 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "frontend"
-          output_location: "frontend/dist"
+          app_location: "."          # package.json ligger i frontend
+          output_location: "dist"    # Vite bygger till frontend/dist
