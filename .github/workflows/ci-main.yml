@@ -26,7 +26,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Cache Node modules (Backend)
         uses: actions/cache@v3
@@ -53,7 +53,7 @@ jobs:
       - name: Lint backend
         run: npm run lint || echo "No lint script, skipping."
 
-      - name: Run backend tests
+      - name: Run tests
         run: npm test || echo "No tests found, skipping."
 
       - name: Build backend
@@ -95,14 +95,13 @@ jobs:
       - name: Lint frontend
         run: npm run lint || echo "No lint script, skipping."
 
-      - name: Run frontend tests
+      - name: Run tests
         run: npm test || echo "No tests found, skipping."
 
       - name: Build frontend
         run: npm run build
 
       - name: Deploy to Azure SWA (Production)
-        if: github.ref == 'refs/heads/main'
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
