@@ -22,13 +22,18 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.19.0'
+
+      - name: Check Node & NPM versions
+        run: |
+          node -v
+          npm -v
 
       - name: Cache Node modules (Backend)
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          key: backend-node-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
@@ -68,13 +73,18 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '20.19.0'
 
-      - name: Cache Node modules
+      - name: Check Node & NPM versions
+        run: |
+          node -v
+          npm -v
+
+      - name: Cache Node modules (Frontend)
         uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          key: frontend-node-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
         run: npm install
@@ -87,9 +97,6 @@ jobs:
 
       - name: Build frontend
         run: npm run build
-
-      - name: Verify dist folder
-        run: ls -R dist
 
       - name: Deploy to Azure SWA (Staging)
         uses: Azure/static-web-apps-deploy@v1
