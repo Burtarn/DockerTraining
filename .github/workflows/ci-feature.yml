@@ -1,24 +1,21 @@
-name: CI Pipeline - Main
+name: CI Pipeline - Feature
 
 on:
   push:
     branches:
-      - main
+      - 'feature/*'
   pull_request:
     branches:
-      - main
-
-permissions:
-  contents: write
-  pages: write
+      - 'feature/*'
 
 jobs:
   backend:
-    name: Build Backend
+    name: Lint & Test Backend (Feature)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: server
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -34,47 +31,22 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Test PostgreSQL connection
-        run: |
-          psql -c "SELECT version();"
-        env:
-          PGHOST: ${{ secrets.PGHOST }}
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPORT: ${{ secrets.PGPORT }}
-          PGDATABASE: ${{ secrets.PGDATABASE }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
-
       - name: Install dependencies
         run: npm install
 
       - name: Lint backend
         run: npm run lint || echo "No lint script, skipping."
 
-      - name: Run tests
+      - name: Run backend tests
         run: npm test || echo "No tests found, skipping."
 
-      - name: Build backend
-        run: npm run build || echo "No build script, skipping."
-
-      - name: Generate Swagger Docs
-        run: npm run docs
-
-      - name: Deploy Swagger Docs
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
-
-
   frontend:
-    name: Build Frontend
+    name: Lint & Test Frontend (Feature)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -96,19 +68,5 @@ jobs:
       - name: Lint frontend
         run: npm run lint || echo "No lint script, skipping."
 
-      - name: Run tests
+      - name: Run frontend tests
         run: npm test || echo "No tests found, skipping."
-
-      - name: Build frontend
-        run: npm run build || echo "No build script, skipping."
-
-      # OM JAG VILL KÖRA MOCKDEPLOY.!!!!!!
-      
-      # - name: Mock Deploy Frontend
-      #   if: success()
-      #   uses: peaceiris/actions-gh-pages@v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: ./frontend/dist
-      #     publish_branch: gh-pages
-      #     destination_dir: frontend-preview
