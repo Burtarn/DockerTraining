@@ -101,6 +101,9 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Verify dist folder
+        run: ls -R dist
+        
       - name: Deploy to Azure SWA (Production)
         uses: Azure/static-web-apps-deploy@v1
         with:
