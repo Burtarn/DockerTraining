@@ -54,5 +54,3 @@ jobs:
           app_artifact_location: "frontend/dist"
           skip_app_build: true
 
-
-           
