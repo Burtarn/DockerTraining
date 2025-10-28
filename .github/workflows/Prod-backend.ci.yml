@@ -16,31 +16,33 @@ jobs:
         working-directory: ./server
 
     steps:
-      # 1. Check out code
+      # 1️⃣ Klona repo
       - name: Check out code
         uses: actions/checkout@v4
 
-      # 2. Set up Node.js
+      # 2️⃣ Sätt upp Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3. Install dependencies
+      # 3️⃣ Installera beroenden
       - name: Install dependencies
         run: npm install
 
-      # 4. Lint & Test (valfritt)
+      # 4️⃣ Lint (valfritt)
       - name: Lint
         run: npm run lint || echo "No lint script, skipping."
+
+      # 5️⃣ Tester
       - name: Run tests
         run: npm test || echo "No tests found, skipping."
 
-      # 5. Build backend (om du har build script)
+      # 6️⃣ Bygg backend (om det finns build script)
       - name: Build backend
         run: npm run build || echo "No build script, skipping."
 
-      # 6. Logga in på Azure Container Registry
+      # 7️⃣ Logga in på Azure Container Registry
       - name: Log in to Azure Container Registry
         uses: docker/login-action@v2
         with:
@@ -48,23 +50,28 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      # 7. Bygg Docker-image med GITHUB_SHA
+      # 8️⃣ Bygg Docker-image med commit SHA
       - name: Build Docker image
         run: docker build -t traningrobin.azurecr.io/server:${GITHUB_SHA::8} .
 
-      # 8. Pusha Docker-image till ACR
+      # 9️⃣ Pusha Docker-image till ACR
       - name: Push Docker image
         run: docker push traningrobin.azurecr.io/server:${GITHUB_SHA::8}
 
-      # 9. Uppdatera Azure Container App med nya imagen
-      - name: Deploy to Azure Container App
-        uses: azure/CLI@v1
+      # 🔟 Logga in på Azure
+      - name: Log in to Azure
+        uses: azure/login@v1
         with:
-          azcliversion: '2.69.0'
-          inlineScript: |
-            echo "${{ secrets.AZURE_CREDENTIALS }}" > azureAuth.json
-            az login --service-principal --sdk-auth --username $(jq -r .clientId azureAuth.json) --password $(jq -r .clientSecret azureAuth.json) --tenant $(jq -r .tenantId azureAuth.json)
-            az containerapp update \
-              --name server-api-prod \
-              --resource-group rg-training-Rob \
-              --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 11️⃣ Uppdatera Azure Container App (DEV) med nya imagen
+      - name: Deploy to Azure Container App (DEV)
+        run: |
+          IMAGE_TAG=${GITHUB_SHA::8}
+          echo "Deploying image tag $IMAGE_TAG"
+          az containerapp update \
+            --name server-api-dev \
+            --resource-group rg-training-Rob \
+            --subscription 9f7950b2-adaf-460b-b955-a970df175c32 \
+            --image traningrobin.azurecr.io/server:$IMAGE_TAG
+        shell: bash
