@@ -13,9 +13,6 @@ permissions:
   pages: write
 
 jobs:
-  # ------------------------
-  # Backend: Build & Deploy
-  # ------------------------
   backend:
     name: Build Backend & Deploy to Azure
     runs-on: ubuntu-latest
@@ -59,7 +56,6 @@ jobs:
       - name: Build backend
         run: npm run build || echo "No build script, skipping."
 
-      # Docker Build & Push
       - name: Log in to Azure Container Registry
         uses: docker/login-action@v2
         with:
@@ -83,9 +79,6 @@ jobs:
               --resource-group rg-training-Rob \
               --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}
 
-  # ------------------------
-  # Frontend: Build & Deploy
-  # ------------------------
   frontend:
     name: Build Frontend & Deploy to Azure SWA
     runs-on: ubuntu-latest
