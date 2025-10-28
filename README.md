@@ -1,4 +1,4 @@
-# Projekt: [Ditt Projektnamn]
+# Projekt: [Docker & Azure]
 
 Detta projekt består av ett **frontend (React/Vite)** och ett **backend (Node.js + Express)** med PostgreSQL som databas. Projektet deployas till **Azure Static Web Apps** för frontend och **Azure Container Apps** för backend.  
 
