@@ -13,12 +13,16 @@ permissions:
   pages: write
 
 jobs:
+  # ------------------------
+  # Backend: Build & Deploy
+  # ------------------------
   backend:
-    name: Build Backend
+    name: Build Backend & Deploy to Azure
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: server
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -28,7 +32,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache Node modules (Backend)
+      - name: Cache Node modules
         uses: actions/cache@v3
         with:
           path: node_modules
@@ -59,21 +63,40 @@ jobs:
       - name: Build backend
         run: npm run build || echo "No build script, skipping."
 
-      - name: Generate Swagger Docs
-        run: npm run docs
-
-      - name: Deploy Swagger Docs
-        uses: peaceiris/actions-gh-pages@v3
+      # Docker Build & Push to Azure Container Registry
+      - name: Log in to Azure Container Registry
+        uses: docker/login-action@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          registry: traningrobin.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
+      - name: Build Docker image
+        run: docker build -t traningrobin.azurecr.io/server:${GITHUB_SHA::8} .
+
+      - name: Push Docker image
+        run: docker push traningrobin.azurecr.io/server:${GITHUB_SHA::8}
+
+      - name: Deploy to Azure Container App (PROD)
+        uses: azure/CLI@v1
+        with:
+          azcliversion: '2.69.0'
+          inlineScript: |
+            az containerapp update \
+              --name server-api-prod \
+              --resource-group rg-training-Rob \
+              --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}
+
+  # ------------------------
+  # Frontend: Build & Deploy
+  # ------------------------
   frontend:
-    name: Build Frontend
+    name: Build Frontend & Deploy to Azure SWA
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -81,7 +104,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Cache Node modules
         uses: actions/cache@v3
@@ -95,16 +118,16 @@ jobs:
       - name: Lint frontend
         run: npm run lint || echo "No lint script, skipping."
 
-      - name: Run tests
+      - name: Run frontend tests
         run: npm test || echo "No tests found, skipping."
 
       - name: Build frontend
         run: npm run build
 
-      - name: Verify dist folder
-        run: ls -R dist
-        
-      - name: Deploy to Azure SWA (Production)
+      - name: List files in dist
+        run: ls -R dist  
+
+      - name: Deploy to Azure SWA
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
@@ -112,3 +135,4 @@ jobs:
           action: "upload"
           app_location: "frontend"
           output_location: "dist"
+          skip_app_build: true
