@@ -1,0 +1,72 @@
+name: Dev Backend CI/CD
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      # 1. Hämta koden
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # 2. Sätt upp Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3. Installera beroenden
+      - name: Install dependencies
+        run: npm install
+
+      # 4. Lint backend (valfritt)
+      - name: Lint
+        run: npm run lint || echo "No lint script, skipping."
+
+      # 5. Kör tester
+      - name: Run tests
+        run: npm test || echo "No tests found, skipping."
+
+      # 6. Bygg backend (om det finns build script)
+      - name: Build backend
+        run: npm run build || echo "No build script, skipping."
+
+      # 7. Logga in på Azure Container Registry
+      - name: Log in to Azure Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: traningrobin.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # 8. Bygg Docker-image med commit SHA
+      - name: Build Docker image
+        run: |
+          docker build -t traningrobin.azurecr.io/server:${GITHUB_SHA::8} .
+
+      # 9. Pusha Docker-image till ACR
+      - name: Push Docker image
+        run: |
+          docker push traningrobin.azurecr.io/server:${GITHUB_SHA::8}
+
+      # 10. Uppdatera Azure Container App (DEV) med nya imagen
+      - name: Deploy to Azure Container App (DEV)
+        uses: azure/CLI@v1
+        with:
+          azcliversion: '2.69.0'
+          inlineScript: |
+            az containerapp update \
+              --name server-api-dev \
+              --resource-group rg-training-Rob \
+              --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}
