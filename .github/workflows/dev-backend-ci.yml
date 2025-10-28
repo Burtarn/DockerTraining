@@ -60,7 +60,7 @@ jobs:
         run: |
           docker push traningrobin.azurecr.io/server:${GITHUB_SHA::8}
 
-      # 10. Logga in på Azure
+      # 10. Logga in på Azure med GitHub Secret
       - name: Log in to Azure
         uses: azure/login@v1
         with:
@@ -75,4 +75,4 @@ jobs:
             az containerapp update \
               --name server-api-dev \
               --resource-group rg-training-Rob \
-              --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}          
+              --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}
