@@ -76,3 +76,4 @@ jobs:
               --resource-group rg-training-Rob \
               --subscription 9f7950b2-adaf-460b-b955-a970df175c32 \
               --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}
+          shell: bash
