@@ -60,7 +60,13 @@ jobs:
         run: |
           docker push traningrobin.azurecr.io/server:${GITHUB_SHA::8}
 
-      # 10. Uppdatera Azure Container App (DEV) med nya imagen
+      # 10. Logga in på Azure
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 11. Uppdatera Azure Container App (DEV) med nya imagen
       - name: Deploy to Azure Container App (DEV)
         uses: azure/CLI@v1
         with:
@@ -69,4 +75,4 @@ jobs:
             az containerapp update \
               --name server-api-dev \
               --resource-group rg-training-Rob \
-              --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}
+              --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}          
