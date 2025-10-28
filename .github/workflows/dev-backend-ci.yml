@@ -66,14 +66,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 11. Uppdatera Azure Container App (DEV) med nya imagen
+      # 11️⃣ Uppdatera Azure Container App (DEV) med nya imagen
       - name: Deploy to Azure Container App (DEV)
         uses: azure/CLI@v1
         with:
           azcliversion: '2.69.0'
           inlineScript: |
-            az containerapp update \
-              --name server-api-dev \
+            az containerapp update --name server-api-dev \
               --resource-group rg-training-Rob \
               --subscription 9f7950b2-adaf-460b-b955-a970df175c32 \
               --image traningrobin.azurecr.io/server:${GITHUB_SHA::8}
