@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"No tests yet\" && exit 0",
     "dev": "nodemon server.js",
-    "docs": "swagger-jsdoc -d swaggerDef.js -o docs/swagger.json"
+    "test": "echo \"No tests yet\" && exit 0",
+    "generate-docs": "node generateSwagger.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

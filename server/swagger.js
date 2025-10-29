@@ -1,6 +1,7 @@
 
     import swaggerJsDoc from "swagger-jsdoc";
     import swaggerUi from "swagger-ui-express";
+    import fs from "fs";
 
     const swaggerOptions = {
     definition: {
@@ -20,6 +21,9 @@
     };
 
     const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
+    fs.writeFileSync("swagger.json", JSON.stringify(swaggerDocs, null, 2));
+    console.log("Swagger JSON genererad: swagger.json");
 
     const setupSwagger = (app) => {
     app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
