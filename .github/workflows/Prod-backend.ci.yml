@@ -47,7 +47,7 @@ jobs:
         working-directory: ./server
 
       - name: Copy Swagger to frontend
-        run: cp ./server/swagger.json ../frontend/public/swagger.json
+        run: cp ./docs/swagger.json ../frontend/public/swagger.json
         working-directory: ./server
 
       - name: Log in to Azure Container Registry
